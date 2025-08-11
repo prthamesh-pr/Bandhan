@@ -22,9 +22,21 @@ CORS(app, resources={
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "your-secret-key-here")
 
 # Configure YOLO
-os.environ["YOLO_CONFIG_DIR"] = "/tmp/Ultralytics"
-if not os.path.exists("/tmp/Ultralytics"):
-    os.makedirs("/tmp/Ultralytics")
+try:
+    # First try the temp directory
+    yolo_config_dir = "/tmp/Ultralytics"
+    os.environ["YOLO_CONFIG_DIR"] = yolo_config_dir
+    if not os.path.exists(yolo_config_dir):
+        os.makedirs(yolo_config_dir, mode=0o777, exist_ok=True)
+except Exception as e:
+    print(f"Failed to create directory in /tmp: {str(e)}")
+    # Fallback to current working directory
+    yolo_config_dir = os.path.join(os.getcwd(), "Ultralytics")
+    os.environ["YOLO_CONFIG_DIR"] = yolo_config_dir
+    if not os.path.exists(yolo_config_dir):
+        os.makedirs(yolo_config_dir, mode=0o777, exist_ok=True)
+
+print(f"Using YOLO config directory: {yolo_config_dir}")
 
 # Load YOLOv8 model
 model = YOLO("yolov8n.pt")
