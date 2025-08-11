@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: bandhan-backend
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: waitress-serve --host=0.0.0.0 --port=$PORT main:app
+    envVars:
+      - key: BACKEND_HOST
+        value: 0.0.0.0
+      - key: BACKEND_PORT
+        value: $PORT
+      - key: BACKEND_DEBUG
+        value: "False"
+    plan: free
+    autoDeploy: true
+    rootDir: BACKEND/assis
